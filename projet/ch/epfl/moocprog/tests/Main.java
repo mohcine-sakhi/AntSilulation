@@ -6,9 +6,17 @@ import java.io.File;
 import static ch.epfl.moocprog.app.Context.getConfig;
 import static ch.epfl.moocprog.config.Config.WORLD_HEIGHT;
 import static ch.epfl.moocprog.config.Config.WORLD_WIDTH;
+
+import ch.epfl.moocprog.utils.Time;
 import ch.epfl.moocprog.utils.Vec2d;
 import ch.epfl.moocprog.ToricPosition;
+import ch.epfl.moocprog.Environment;
+import ch.epfl.moocprog.Food;
 import ch.epfl.moocprog.Positionable;
+
+import static ch.epfl.moocprog.app.Context.getConfig;
+import static ch.epfl.moocprog.config.Config.*;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -48,6 +56,39 @@ public class Main {
         System.out.println("Some tests for Positionable");
         System.out.println("Default position : " + p1.getPosition());
         System.out.println("Initialized at tp4 : " + p2.getPosition());
+        
+        // tests for Step 02
+        
+        Food f1 =new Food(tp2, 4.7);
+        Food f2 =new Food(tp3, 6.7);
+        System.out.println();
+        
+        System.out.println("Some tests for Food");
+        System.out.println("Display : ");
+        System.out.println(f1);
+        System.out.println("Initial : " + f1.getQuantity()
+        								+ ", taken : "
+						        		+ f1.takeQuantity(5.0)
+						        		+ ", left : " 
+						        		+ f1.getQuantity());
+        
+        System.out.println("Initial : " + f2.getQuantity()
+        								+ ", taken : "
+						        		+ f2.takeQuantity(2.0)
+						        		+ ", left : "
+						        		+ f2.getQuantity());
+        
+        final Time foodGenDelta = getConfig().getTime(FOOD_GENERATOR_DELAY);
+        Environment env =new Environment();
+        env.addFood(f1);
+        env.addFood(f2);
+        
+        System.out.println();
+        System.out.println("Some tests for Environment");
+        System.out.println("Inital food quantities : " + env.getFoodQuantities());
+        
+        env.update(foodGenDelta);
+        System.out.println("After update : " + env.getFoodQuantities());
 
     }
 }
