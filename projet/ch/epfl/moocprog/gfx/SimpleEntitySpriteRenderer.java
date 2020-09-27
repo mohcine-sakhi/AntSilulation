@@ -1,11 +1,7 @@
 package ch.epfl.moocprog.gfx;
 
-import ch.epfl.moocprog.Animal;
 import ch.epfl.moocprog.Positionable;
-import ch.epfl.moocprog.AntWorker;
 import ch.epfl.moocprog.Anthill;
-import ch.epfl.moocprog.Food;
-import ch.epfl.moocprog.ToricPosition;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;

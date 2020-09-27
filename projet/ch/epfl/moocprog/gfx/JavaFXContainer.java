@@ -2,7 +2,6 @@ package ch.epfl.moocprog.gfx;
 
 import static ch.epfl.moocprog.app.Context.getApplication;
 import static ch.epfl.moocprog.config.Config.*;
-import java.math.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,7 +19,6 @@ import ch.epfl.moocprog.Environment;
 import ch.epfl.moocprog.Termite;
 import ch.epfl.moocprog.utils.Time;
 import ch.epfl.moocprog.ToricPosition;
-import ch.epfl.moocprog.utils.Vec2d;
 import ch.epfl.moocprog.app.Context;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.ObjectProperty;
@@ -28,7 +26,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -39,7 +36,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public final class JavaFXContainer extends javafx.application.Application {
@@ -76,8 +72,8 @@ public final class JavaFXContainer extends javafx.application.Application {
 		Map<String, Boolean> m = makeDebuStructure();
 		Node debugControl = DebugControlPane(m);
 		
-		width = (int)Math.min (environment.getWidth(), MAXWIDTH);
-		height = (int) Math.min (environment.getHeight(), MAXHEIGHT);
+		width = Math.min (environment.getWidth(), MAXWIDTH);
+		height = Math.min (environment.getHeight(), MAXHEIGHT);
 		renderer = new EnvironmentGraphicRenderer(m,width, height);
 
 		zoomScale = new SimpleObjectProperty<Double>();

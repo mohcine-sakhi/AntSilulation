@@ -15,7 +15,6 @@ import ch.epfl.moocprog.Food;
 import ch.epfl.moocprog.Positionable;
 import ch.epfl.moocprog.Termite;
 
-import static ch.epfl.moocprog.app.Context.getConfig;
 import static ch.epfl.moocprog.config.Config.*;
 
 public class Main {

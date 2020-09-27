@@ -21,6 +21,7 @@ public class Positionable {
 		this.position = position;
 	}
 	
+	@Override
 	public String toString() {
 		return this.position.toString();
 	}

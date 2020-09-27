@@ -7,7 +7,6 @@ import ch.epfl.moocprog.Anthill;
 import ch.epfl.moocprog.Food;
 import ch.epfl.moocprog.Pheromone;
 import javafx.scene.Parent;
-import javafx.scene.canvas.Canvas;
 
 public final class EnvironmentGraphicRenderer extends Parent implements EnvironmentRenderer {
     private final JavaFXAntSimulationCanvas canvas;

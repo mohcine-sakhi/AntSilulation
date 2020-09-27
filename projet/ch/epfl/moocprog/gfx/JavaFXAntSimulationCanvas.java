@@ -3,8 +3,6 @@ package ch.epfl.moocprog.gfx;
 import java.util.Map;
 import java.util.Set;
 
-import javafx.scene.canvas.Canvas;
-
 public final class JavaFXAntSimulationCanvas extends JavaFXCanvasRenderingMedia {
 	
 	private Map<String,Boolean> debugProps;

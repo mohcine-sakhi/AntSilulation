@@ -2,7 +2,6 @@ package ch.epfl.moocprog.gfx;
 
 import ch.epfl.moocprog.Positionable;
 import ch.epfl.moocprog.utils.Vec2d;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.transform.Affine;
 
 interface EntityRenderer<T extends Positionable> {

@@ -97,6 +97,7 @@ public final class ToricPosition {
 		return vecteur.length();
 	}
 	
+	@Override
 	public String toString() {
 		return this.position.toString();
 	}

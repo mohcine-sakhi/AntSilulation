@@ -31,15 +31,15 @@ public final class Environment implements FoodGeneratorEnvironmentView, AnimalEn
 		
 	}
 	
-	public void addAnthill(Anthill anthill) {
-		
-	}
-	
 	public void addAnimal(Animal animal) {
 		if(animal == null) {
 			throw new IllegalArgumentException();
 		}
 		animals.add(animal);
+	}
+	
+	public void addAnthill(Anthill anthill) {
+		
 	}
 	
 	public List<Double> getFoodQuantities(){

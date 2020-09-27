@@ -63,7 +63,8 @@ public final class ImmutableConfigManager implements ConfigManager {
      *
      * @param file Le fichier de configuration de la simulation
      */
-    public ImmutableConfigManager reload() {
+    @Override
+	public ImmutableConfigManager reload() {
        
         return new ImmutableConfigManager(configFile);
 

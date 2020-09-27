@@ -1,8 +1,6 @@
 package ch.epfl.moocprog.gfx;
 
 import ch.epfl.moocprog.Anthill;
-import ch.epfl.moocprog.random.UniformDistribution;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 
 import static ch.epfl.moocprog.gfx.GFXUtil.loadSprite;
