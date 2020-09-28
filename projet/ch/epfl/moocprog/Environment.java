@@ -1,5 +1,6 @@
 package ch.epfl.moocprog;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,17 +10,21 @@ import static ch.epfl.moocprog.config.Config.*;
 
 import ch.epfl.moocprog.gfx.EnvironmentRenderer;
 import ch.epfl.moocprog.utils.Time;
+import ch.epfl.moocprog.utils.Utils;
 
-public final class Environment implements FoodGeneratorEnvironmentView, AnimalEnvironmentView{
+public final class Environment implements FoodGeneratorEnvironmentView, AnimalEnvironmentView,
+		AnthillEnvironmentView, AntEnvironmentView, AntWorkerEnvironmentView{
 	
 	private FoodGenerator foodGenerator;
 	private List<Food> foods;
 	private List<Animal> animals;
+	private List<Anthill> anthills;
 	
 	public Environment() {
 		foodGenerator = new FoodGenerator();
 		foods = new LinkedList<Food>();
 		animals = new LinkedList<Animal>();
+		anthills = new ArrayList<>();
 	}
  
 	@Override
@@ -31,6 +36,7 @@ public final class Environment implements FoodGeneratorEnvironmentView, AnimalEn
 		
 	}
 	
+	//@Override
 	public void addAnimal(Animal animal) {
 		if(animal == null) {
 			throw new IllegalArgumentException();
@@ -39,7 +45,15 @@ public final class Environment implements FoodGeneratorEnvironmentView, AnimalEn
 	}
 	
 	public void addAnthill(Anthill anthill) {
-		
+		if(anthill == null) {
+			throw new IllegalArgumentException();
+		}
+		anthills.add(anthill);
+	}
+	
+	@Override
+	public void addAnt(Ant ant) {
+		this.addAnimal(ant);
 	}
 	
 	public List<Double> getFoodQuantities(){
@@ -90,6 +104,41 @@ public final class Environment implements FoodGeneratorEnvironmentView, AnimalEn
 	public int getHeight() {
 		return getConfig().getInt(WORLD_HEIGHT);
 	}
+
+	@Override
+	public Food getClosestFoodForAnt(AntWorker antWorker) {
+		if(antWorker == null) {
+			throw new IllegalArgumentException();
+		}
+		//recuper la food la plus proche
+		Food food = Utils.closestFromPoint(antWorker, foods);
+		
+		if(food != null && antWorker.getPosition().toricDistance(food.getPosition())
+				<= getConfig().getDouble(ANT_MAX_PERCEPTION_DISTANCE)) {
+			return food;
+		}
+		return null;
+	}
+
+	@Override
+	public boolean dropFood(AntWorker antWorker) {
+		// recupere la fourmiliere de notre fourmi
+		if(antWorker == null ) {
+			throw new IllegalArgumentException();
+		}
+		Anthill anthill = null;
+		for(Anthill val : anthills) {
+			if(val.getAnthillId().equals(antWorker.getAnthillId())) {
+				anthill = val;
+				break;
+			}
+		}
+		
+		return anthill != null && (antWorker.getPosition().toricDistance(anthill.getPosition())
+									<= getConfig().getDouble(ANT_MAX_PERCEPTION_DISTANCE));
+	}
+
+	
 	
 	
 
