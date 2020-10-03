@@ -135,9 +135,13 @@ public final class Environment implements FoodGeneratorEnvironmentView, AnimalEn
 				break;
 			}
 		}
-
-		return anthill != null && (antWorker.getPosition().toricDistance(anthill.getPosition()) <= getConfig()
+		boolean success = anthill != null && (antWorker.getPosition().toricDistance(anthill.getPosition()) <= getConfig()
 				.getDouble(ANT_MAX_PERCEPTION_DISTANCE));
+		
+		if(success) {
+			anthill.dropFood(antWorker.getFoodQuantity());
+		}
+		return success;
 	}
 
 	@Override

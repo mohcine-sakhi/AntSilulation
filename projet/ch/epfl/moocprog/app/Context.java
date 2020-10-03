@@ -7,7 +7,7 @@ import ch.epfl.moocprog.config.ConfigManager;
 public final class Context {
     private static Application THE_APP;
     public static String CONFIG_PATH= "res/app.cfg";
-    public static String INIT_PATH="res/config.cfg";
+    public static String INIT_PATH="res/config-step9.cfg";
 
     /*package*/
     static void initializeApplication(Application application) {
