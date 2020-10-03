@@ -15,7 +15,7 @@ public final class FoodGenerator {
 		time = Time.ZERO;
 	}
 	
-	void update(FoodGeneratorEnvironmentView env, Time dt){
+	public void update(FoodGeneratorEnvironmentView env, Time dt){
 		time = time.plus(dt);
 		Time foodGeneratorDelay = getConfig().getTime(FOOD_GENERATOR_DELAY);
 		Food food;
