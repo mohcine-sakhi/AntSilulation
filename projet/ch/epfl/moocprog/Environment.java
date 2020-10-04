@@ -20,12 +20,14 @@ public final class Environment implements FoodGeneratorEnvironmentView, AnimalEn
 	private List<Food> foods;
 	private List<Animal> animals;
 	private List<Anthill> anthills;
+	private List<Pheromone> pheromones;
 
 	public Environment() {
 		foodGenerator = new FoodGenerator();
 		foods = new LinkedList<Food>();
 		animals = new LinkedList<Animal>();
 		anthills = new ArrayList<>();
+		pheromones = new LinkedList<>();
 	}
 
 	@Override
@@ -57,6 +59,15 @@ public final class Environment implements FoodGeneratorEnvironmentView, AnimalEn
 		this.addAnimal(ant);
 	}
 
+	@Override
+	public void addPheromone(Pheromone pheromone) {
+		if (pheromone == null) {
+			throw new IllegalArgumentException();
+		}
+		pheromones.add(pheromone);
+
+	}
+
 	public List<Double> getFoodQuantities() {
 
 		return foods.stream().map(food -> food.getQuantity()).collect(Collectors.toList());
@@ -67,20 +78,37 @@ public final class Environment implements FoodGeneratorEnvironmentView, AnimalEn
 		return animals.stream().map(animal -> animal.getPosition()).collect(Collectors.toList());
 	}
 
+	public List<Double> getPheromonesQuantities() {
+		return pheromones.stream().map(pheromone -> pheromone.getQuantity()).collect(Collectors.toList());
+	}
+
 	public void update(Time dt) {
 		// generation de la nourriture
 		foodGenerator.update(this, dt);
 
+		// gestion des phéromones
+		Iterator<Pheromone> pheromoneIterateur = pheromones.iterator();
+		Pheromone pheromone;
+		while (pheromoneIterateur.hasNext()) {
+			pheromone = pheromoneIterateur.next();
+			if (pheromone.isNegligible()) {
+				pheromoneIterateur.remove();
+			} else {
+				pheromone.update(dt);
+			}
+		}
+
+		// Gestion des animaux(génération puis mise à jour)
 		for (Anthill anthill : anthills) {
 			anthill.update(this, dt);
 		}
 
-		// Gestion des animaux
-		Iterator<Animal> iterateur = animals.iterator();
-		while (iterateur.hasNext()) {
-			Animal animal = iterateur.next();
+		Iterator<Animal> animalIterateur = animals.iterator();
+		Animal animal;
+		while (animalIterateur.hasNext()) {
+			animal = animalIterateur.next();
 			if (animal.isDead()) {
-				iterateur.remove();
+				animalIterateur.remove();
 			} else {
 				animal.update(this, dt);
 			}
@@ -97,6 +125,7 @@ public final class Environment implements FoodGeneratorEnvironmentView, AnimalEn
 		foods.forEach(environmentRenderer::renderFood);
 		animals.forEach(environmentRenderer::renderAnimal);
 		anthills.forEach(environmentRenderer::renderAnthill);
+		pheromones.forEach(environmentRenderer::renderPheromone);
 	}
 
 	public int getWidth() {
@@ -135,10 +164,10 @@ public final class Environment implements FoodGeneratorEnvironmentView, AnimalEn
 				break;
 			}
 		}
-		boolean success = anthill != null && (antWorker.getPosition().toricDistance(anthill.getPosition()) <= getConfig()
-				.getDouble(ANT_MAX_PERCEPTION_DISTANCE));
-		
-		if(success) {
+		boolean success = anthill != null && (antWorker.getPosition()
+				.toricDistance(anthill.getPosition()) <= getConfig().getDouble(ANT_MAX_PERCEPTION_DISTANCE));
+
+		if (success) {
 			anthill.dropFood(antWorker.getFoodQuantity());
 		}
 		return success;
@@ -163,6 +192,64 @@ public final class Environment implements FoodGeneratorEnvironmentView, AnimalEn
 		}
 		antSoldier.seekForEnemies(this, dt);
 
+	}
+
+	@Override
+	public double[] getPheromoneQuantitiesPerIntervalForAnt(ToricPosition position, double directionAngleRad,
+			double[] angles) {
+		
+		if (position == null || angles == null) {
+			throw new IllegalArgumentException();
+		}
+		
+		double antSmellMaxDistance = getConfig().getDouble(ANT_SMELL_MAX_DISTANCE);
+		double distance;
+		double beta = 0;
+		double[] quantities = new double[angles.length];
+		double closetAngle;
+		int index;
+		for (Pheromone pheromone : pheromones) {
+			distance = pheromone.getPosition().toricDistance(position);
+			// pheromone non négligeable et à la poetée
+			if (!pheromone.isNegligible() && distance <= antSmellMaxDistance) {
+				beta = (position.toricVector(pheromone.getPosition())).angle() - directionAngleRad;
+			
+				closetAngle = Double.MAX_VALUE;
+				index = 0;
+				// chercher l index de l'angle le plus proche
+				for (int i = 0; i < angles.length; ++i) {
+					if (closestAngleFrom(angles[i], beta) < closetAngle) {
+						closetAngle = closestAngleFrom(angles[i], beta) ;
+						index = i;
+					}
+				}
+	
+				quantities[index] += pheromone.getQuantity();
+			}	
+		}
+		return quantities;
+	}
+
+	private static double normalizedAngle(double angle) {
+		while (angle >= 2 * Math.PI) {
+			angle -= 2 * Math.PI;
+		}
+		while (angle < 0) {
+			angle += 2 * Math.PI;
+		}
+
+		return angle;
+	}
+
+	private static double closestAngleFrom(double angle, double target) {
+		double diff = angle - target;
+		diff = normalizedAngle(diff);
+		
+		if (diff <= 2 * Math.PI - diff) {
+			return diff;
+		} else {
+			return 2 * Math.PI - diff;
+		}
 	}
 
 }
