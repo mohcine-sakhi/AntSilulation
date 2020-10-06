@@ -252,4 +252,16 @@ public final class Environment implements FoodGeneratorEnvironmentView, AnimalEn
 		}
 	}
 
+	@Override
+	public RotationProbability selectComputeRotationProbsDispatch(Ant ant) {
+		
+		return ant.computeRotationProbs(this);
+	}
+
+	@Override
+	public void selectAfterMoveDispatch(Ant ant, Time dt) {
+		ant.afterMoveAnt(this, dt);
+		
+	}
+
 }

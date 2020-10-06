@@ -24,19 +24,45 @@ public abstract class Ant extends Animal {
 
 	private final void spreadPheromones(AntEnvironmentView env) {
 		ToricPosition currentPos = this.getPosition();
+
 		double distance = currentPos.toricDistance(lastPos);
-		//récupérer le vecteur de déplacement fait par la fourmi
-		Vec2d vecteurToric = lastPos.toricVector(currentPos);
+		// System.out.println("distance : " +distance);
+
 		// nombre d'instances à créer
 		int instances = (int) (distance * getConfig().getDouble(ANT_PHEROMONE_DENSITY));
+		// System.out.println("instances : "+instances);
+
+		// récupérer le vecteur de déplacement fait par la fourmi pour savoir ou placer
+		// les pheromones
+		Vec2d vecteurToric = lastPos.toricVector(currentPos).scalarProduct(1.0 / instances);
+
 		Pheromone pheromone;
 		double quantity = getConfig().getDouble(ANT_PHEROMONE_ENERGY);
-		for(int i = 1; i <= instances; ++i) {
-			pheromone = new Pheromone(new ToricPosition(vecteurToric.scalarProduct(i)), quantity);
-//			System.out.println("last "+ lastPos);
-//			System.out.println(new ToricPosition(vecteurToric.scalarProduct(i)));
+		
+		for (int i = 1; i <= instances; ++i) {
+			lastPos = lastPos.add(vecteurToric);
+			pheromone = new Pheromone(lastPos, quantity);
 			env.addPheromone(pheromone);
+			
 		}
+	}
+
+	@Override
+	protected final RotationProbability computeRotationProbsDispatch(AnimalEnvironmentView env) {
+		return env.selectComputeRotationProbsDispatch(this);
+	}
+
+	protected final RotationProbability computeRotationProbs(AntEnvironmentView env) {
+		return super.computeDefaultRotationProbs();
+	}
+
+	protected final void afterMoveAnt(AntEnvironmentView env, Time dt) {
+		this.spreadPheromones(env);
+	}
+
+	@Override
+	protected final void afterMoveDispatch(AnimalEnvironmentView env, Time dt) {
+		env.selectAfterMoveDispatch(this, dt);
 	}
 
 }

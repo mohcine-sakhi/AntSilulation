@@ -27,7 +27,7 @@ public final class Pair<F, S> {
     @Override
     public boolean equals(Object o) {
         if(o instanceof Pair) {
-            Pair that = (Pair) o;
+            Pair<?, ?> that = (Pair<?, ?>) o;
             return this.first.equals(that.first)
                     && this.second.equals(that.second);
         } else {

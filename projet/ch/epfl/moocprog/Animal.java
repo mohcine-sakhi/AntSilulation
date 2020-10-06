@@ -56,7 +56,7 @@ public abstract class Animal extends Positionable {
 		return chaine;
 	}
 
-	protected final void move(Time dt) {
+	protected final void move(AnimalEnvironmentView env, Time dt) {
 		this.rotationDelay = this.rotationDelay.plus(dt);
 		Time animalNextGenerationDelay = getConfig().getTime(ANIMAL_NEXT_ROTATION_DELAY);
 
@@ -64,7 +64,7 @@ public abstract class Animal extends Positionable {
 		while (this.rotationDelay.minus(animalNextGenerationDelay).isPositive()) {
 
 			this.rotationDelay = this.rotationDelay.minus(animalNextGenerationDelay);
-			double gamma = this.rotate();
+			double gamma = this.rotate(env);
 			this.setDirection(this.getDirection() + gamma);
 		}
 		// le vecteur de déplacement
@@ -72,6 +72,8 @@ public abstract class Animal extends Positionable {
 
 		// Ajouter le deplacement a la position actuelle
 		this.setPosition(this.getPosition().add(deplacement));
+		//appel a eftermove
+		this.afterMoveDispatch(env, dt);
 
 	}
 
@@ -86,7 +88,7 @@ public abstract class Animal extends Positionable {
 
 	}
 
-	protected RotationProbability computeRotationProbs() {
+	protected final RotationProbability computeDefaultRotationProbs() {
 		double[] angles = { -180, -100, -55, -25, -10, 0, 10, 25, 55, 100, 180 };
 
 		for (int i = 0; i < angles.length; ++i) {
@@ -99,12 +101,14 @@ public abstract class Animal extends Positionable {
 		return new RotationProbability(angles, probabilities);
 	}
 
-	private double rotate() {
-		return Utils.pickValue(this.computeRotationProbs().getAngles(), this.computeRotationProbs().getProbabilities());
+	private double rotate(AnimalEnvironmentView env) {
+		return Utils.pickValue(this.computeRotationProbsDispatch(env).getAngles(), this.computeRotationProbsDispatch(env).getProbabilities());
 	}
 
 	public abstract void accept(AnimalVisitor visitor, RenderingMedia s);
 
 	protected abstract void specificBehaviorDispatch(AnimalEnvironmentView env, Time dt);
+	protected abstract RotationProbability computeRotationProbsDispatch(AnimalEnvironmentView env);
+	protected abstract void afterMoveDispatch(AnimalEnvironmentView env, Time dt);
 
 }

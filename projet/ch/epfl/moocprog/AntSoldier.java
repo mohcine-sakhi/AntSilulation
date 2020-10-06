@@ -18,7 +18,7 @@ public final class AntSoldier extends Ant {
 	}
 
 	protected void seekForEnemies(AntEnvironmentView env, Time dt) {
-		this.move(dt);
+		this.move(env, dt);
 	}
 
 	@Override

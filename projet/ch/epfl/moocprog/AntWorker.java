@@ -65,7 +65,7 @@ public final class AntWorker extends Ant {
 				this.setDirection(angle);
 			}
 		}
-		this.move(dt);
+		this.move(env, dt);
 	}
 
 	@Override

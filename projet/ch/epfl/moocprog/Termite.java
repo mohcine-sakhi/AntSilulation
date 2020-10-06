@@ -27,4 +27,15 @@ public final class Termite extends Animal{
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	protected RotationProbability computeRotationProbsDispatch(AnimalEnvironmentView env) {
+		return null;
+	}
+
+	@Override
+	protected void afterMoveDispatch(AnimalEnvironmentView env, Time dt) {
+		// TODO Auto-generated method stub
+		
+	}
 }
