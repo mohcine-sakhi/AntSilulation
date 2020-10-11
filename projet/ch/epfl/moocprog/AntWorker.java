@@ -14,6 +14,12 @@ public final class AntWorker extends Ant {
 		this.foodQuantity = 0;
 	}
 
+	public AntWorker(ToricPosition position, Uid anthillId, AntRotationProbabilityModel probModel) {
+		super(position, getConfig().getInt(ANT_WORKER_HP), getConfig().getTime(ANT_WORKER_LIFESPAN), anthillId,
+				probModel);
+		this.foodQuantity = 0;
+	}
+
 	public double getFoodQuantity() {
 		return foodQuantity;
 	}
@@ -33,35 +39,36 @@ public final class AntWorker extends Ant {
 	}
 
 	protected void seekForFood(AntWorkerEnvironmentView env, Time dt) {
-		//la fourmi ne transporte rien
-		if(this.getFoodQuantity() == 0) {
-			//chercher la source de nourriture la plus proche
+		// la fourmi ne transporte rien
+		if (this.getFoodQuantity() == 0) {
+			// chercher la source de nourriture la plus proche
 			Food food = env.getClosestFoodForAnt(this);
-			if(food != null) {
-				//puiser de la nourriture
+			if (food != null) {
+				// puiser de la nourriture
 				foodQuantity = food.takeQuantity(getConfig().getDouble(ANT_MAX_FOOD));
-				//Faire un demi tour
+				// Faire un demi tour
 				double angle = this.getDirection() + Math.PI;
-				if(angle >= 2 * Math.PI) {
+				if (angle >= 2 * Math.PI) {
 					angle -= 2 * Math.PI;
 				}
-				
+
 				this.setDirection(angle);
 			}
 		}
-		// la fourmi ne transporte rien on a pas fait un else pour prendre le cas ou la fourmi vient juste 
+		// la fourmi ne transporte rien on a pas fait un else pour prendre le cas ou la
+		// fourmi vient juste
 		// de puiser de la nouriture
-		if(this.getFoodQuantity() != 0) {
-			//chercher à déposer la nourriture transportée
-			if(env.dropFood(this)) {
-				//déposer la nouriture la nourriture
+		if (this.getFoodQuantity() != 0) {
+			// chercher à déposer la nourriture transportée
+			if (env.dropFood(this)) {
+				// déposer la nouriture la nourriture
 				foodQuantity = 0;
-				//Faire un demi tour
+				// Faire un demi tour
 				double angle = this.getDirection() + Math.PI;
-				if(angle >= 2 * Math.PI) {
+				if (angle >= 2 * Math.PI) {
 					angle -= 2 * Math.PI;
 				}
-				
+
 				this.setDirection(angle);
 			}
 		}

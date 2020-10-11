@@ -12,10 +12,21 @@ public abstract class Ant extends Animal {
 	// postion de la formi à sa création
 	private ToricPosition lastPos;
 
+	private AntRotationProbabilityModel probModel;
+
 	public Ant(ToricPosition position, int hitpoints, Time lifespan, Uid anthillId) {
 		super(position, hitpoints, lifespan);
 		this.anthillId = anthillId;
 		this.lastPos = this.getPosition();
+		this.probModel = new PheromoneRotationProbabilityModel();
+	}
+
+	public Ant(ToricPosition position, int hitpoints, Time lifespan, Uid anthillId,
+			AntRotationProbabilityModel probModel) {
+		super(position, hitpoints, lifespan);
+		this.anthillId = anthillId;
+		this.lastPos = this.getPosition();
+		this.probModel = probModel;
 	}
 
 	public final Uid getAnthillId() {
@@ -38,12 +49,12 @@ public abstract class Ant extends Animal {
 
 		Pheromone pheromone;
 		double quantity = getConfig().getDouble(ANT_PHEROMONE_ENERGY);
-		
+
 		for (int i = 1; i <= instances; ++i) {
 			lastPos = lastPos.add(vecteurToric);
 			pheromone = new Pheromone(lastPos, quantity);
 			env.addPheromone(pheromone);
-			
+
 		}
 	}
 
@@ -53,7 +64,7 @@ public abstract class Ant extends Animal {
 	}
 
 	protected final RotationProbability computeRotationProbs(AntEnvironmentView env) {
-		return super.computeDefaultRotationProbs();
+		return this.probModel.computeRotationProbs(super.computeDefaultRotationProbs(), this.getPosition(), this.getDirection(), env);
 	}
 
 	protected final void afterMoveAnt(AntEnvironmentView env, Time dt) {
