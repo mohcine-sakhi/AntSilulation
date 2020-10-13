@@ -28,6 +28,24 @@ public final class AntWorker extends Ant {
 	public double getSpeed() {
 		return getConfig().getDouble(ANT_WORKER_SPEED);
 	}
+	
+	@Override
+	public int getMinAttackStrength() {
+		
+		return getConfig().getInt(ANT_WORKER_MIN_STRENGTH);
+	}
+
+	@Override
+	public int getMaxAttackStrength() {
+		
+		return getConfig().getInt(ANT_WORKER_MAX_STRENGTH);
+	}
+
+	@Override
+	public Time getMaxAttackDuration() {
+		
+		return getConfig().getTime(ANT_WORKER_ATTACK_DURATION);
+	}
 
 	@Override
 	public String toString() {
@@ -90,5 +108,7 @@ public final class AntWorker extends Ant {
 		env.selectSpecificBehaviorDispatch(this, dt);
 
 	}
+
+	
 
 }

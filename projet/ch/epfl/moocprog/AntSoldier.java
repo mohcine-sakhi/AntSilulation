@@ -22,6 +22,23 @@ public final class AntSoldier extends Ant {
 	public double getSpeed() {
 		return getConfig().getDouble(ANT_SOLDIER_SPEED);
 	}
+	@Override
+	public int getMinAttackStrength() {
+		
+		return getConfig().getInt(ANT_SOLDIER_MIN_STRENGTH);
+	}
+
+	@Override
+	public int getMaxAttackStrength() {
+		
+		return getConfig().getInt(ANT_SOLDIER_MAX_STRENGTH);
+	}
+
+	@Override
+	public Time getMaxAttackDuration() {
+		
+		return getConfig().getTime(ANT_SOLDIER_ATTACK_DURATION);
+	}
 
 	protected void seekForEnemies(AntEnvironmentView env, Time dt) {
 		this.move(env, dt);
@@ -42,5 +59,7 @@ public final class AntSoldier extends Ant {
 		env.selectSpecificBehaviorDispatch(this, dt);
 
 	}
+
+	
 
 }

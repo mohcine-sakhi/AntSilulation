@@ -14,6 +14,7 @@ public abstract class Animal extends Positionable {
 	private int hitpoints;
 	private Time lifespan;
 	private Time rotationDelay;
+	private Time attackDuration;
 
 	public Animal(ToricPosition position, int hitpoints, Time lifespan) {
 		super(position);
@@ -21,6 +22,7 @@ public abstract class Animal extends Positionable {
 		this.lifespan = lifespan;
 		this.direction = UniformDistribution.getValue(0, 2 * Math.PI);
 		this.rotationDelay = Time.ZERO;
+		this.attackDuration = Time.ZERO;
 	}
 
 	public final double getDirection() {
@@ -44,6 +46,9 @@ public abstract class Animal extends Positionable {
 	}
 
 	public abstract double getSpeed();
+	public abstract int getMinAttackStrength();
+	public abstract int getMaxAttackStrength();
+	public abstract Time getMaxAttackDuration();
 
 	@Override
 	public String toString() {
@@ -72,7 +77,7 @@ public abstract class Animal extends Positionable {
 
 		// Ajouter le deplacement a la position actuelle
 		this.setPosition(this.getPosition().add(deplacement));
-		//appel a eftermove
+		// appel a eftermove
 		this.afterMoveDispatch(env, dt);
 
 	}
@@ -102,13 +107,22 @@ public abstract class Animal extends Positionable {
 	}
 
 	private double rotate(AnimalEnvironmentView env) {
-		return Utils.pickValue(this.computeRotationProbsDispatch(env).getAngles(), this.computeRotationProbsDispatch(env).getProbabilities());
+		return Utils.pickValue(this.computeRotationProbsDispatch(env).getAngles(),
+				this.computeRotationProbsDispatch(env).getProbabilities());
 	}
 
 	public abstract void accept(AnimalVisitor visitor, RenderingMedia s);
 
 	protected abstract void specificBehaviorDispatch(AnimalEnvironmentView env, Time dt);
+
 	protected abstract RotationProbability computeRotationProbsDispatch(AnimalEnvironmentView env);
+
 	protected abstract void afterMoveDispatch(AnimalEnvironmentView env, Time dt);
+
+	protected abstract boolean isEnemy(Animal animal);
+
+	protected abstract boolean isEnemyDispatch(Termite termite);
+
+	protected abstract boolean isEnemyDispatch(Ant othanter);
 
 }
