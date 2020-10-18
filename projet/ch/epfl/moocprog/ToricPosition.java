@@ -71,11 +71,11 @@ public final class ToricPosition {
 		vecteurs[0] = that.toVec2d().add(new Vec2d(0, getConfig().getInt(WORLD_HEIGHT)));
 		vecteurs[1] = that.toVec2d().add(new Vec2d(0, -getConfig().getInt(WORLD_HEIGHT)));
 		vecteurs[2] = that.toVec2d().add(new Vec2d(getConfig().getInt(WORLD_WIDTH), 0));
-		vecteurs[3] = that.toVec2d().add(new Vec2d(-getConfig().getInt(WORLD_HEIGHT), 0));
-		vecteurs[4] = that.toVec2d().add(new Vec2d(getConfig().getInt(WORLD_HEIGHT), getConfig().getInt(WORLD_HEIGHT)));
-		vecteurs[5] = that.toVec2d().add(new Vec2d(-getConfig().getInt(WORLD_HEIGHT), getConfig().getInt(WORLD_HEIGHT)));
-		vecteurs[6] = that.toVec2d().add(new Vec2d(getConfig().getInt(WORLD_HEIGHT), -getConfig().getInt(WORLD_HEIGHT)));
-		vecteurs[7] = that.toVec2d().add(new Vec2d(-getConfig().getInt(WORLD_HEIGHT),-getConfig().getInt(WORLD_HEIGHT)));
+		vecteurs[3] = that.toVec2d().add(new Vec2d(-getConfig().getInt(WORLD_WIDTH), 0));
+		vecteurs[4] = that.toVec2d().add(new Vec2d(getConfig().getInt(WORLD_WIDTH), getConfig().getInt(WORLD_HEIGHT)));
+		vecteurs[5] = that.toVec2d().add(new Vec2d(-getConfig().getInt(WORLD_WIDTH), getConfig().getInt(WORLD_HEIGHT)));
+		vecteurs[6] = that.toVec2d().add(new Vec2d(getConfig().getInt(WORLD_WIDTH), -getConfig().getInt(WORLD_HEIGHT)));
+		vecteurs[7] = that.toVec2d().add(new Vec2d(-getConfig().getInt(WORLD_WIDTH),-getConfig().getInt(WORLD_HEIGHT)));
 		vecteurs[8] = that.toVec2d();
 		
 		double distance = Double.MAX_VALUE;

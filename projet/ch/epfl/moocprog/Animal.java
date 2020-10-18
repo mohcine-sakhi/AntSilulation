@@ -8,6 +8,8 @@ import ch.epfl.moocprog.utils.Vec2d;
 import static ch.epfl.moocprog.app.Context.getConfig;
 import static ch.epfl.moocprog.config.Config.*;
 
+import java.util.List;
+
 public abstract class Animal extends Positionable {
 
 	private double direction;
@@ -15,6 +17,10 @@ public abstract class Animal extends Positionable {
 	private Time lifespan;
 	private Time rotationDelay;
 	private Time attackDuration;
+	public enum State { IDLE, ESCAPING, ATTACK };
+	private State state;
+	
+
 
 	public Animal(ToricPosition position, int hitpoints, Time lifespan) {
 		super(position);
@@ -23,6 +29,15 @@ public abstract class Animal extends Positionable {
 		this.direction = UniformDistribution.getValue(0, 2 * Math.PI);
 		this.rotationDelay = Time.ZERO;
 		this.attackDuration = Time.ZERO;
+		this.state = State.IDLE;
+	}
+	
+	public final State getState() {
+		return state;
+	}
+	
+	public final void setState(State newState) {
+		this.state = newState;
 	}
 
 	public final double getDirection() {
@@ -34,7 +49,7 @@ public abstract class Animal extends Positionable {
 	}
 
 	public final boolean isDead() {
-		return (hitpoints <= 0 || lifespan.toSeconds() <= 0);
+		return (this.getHitpoints() <= 0 || this.getLifespan().toSeconds() <= 0);
 	}
 
 	public final int getHitpoints() {
@@ -56,7 +71,8 @@ public abstract class Animal extends Positionable {
 		String chaine = super.toString() + "\n";
 		chaine += String.format("Speed : %.1f", getSpeed()) + "\n";
 		chaine += String.format("HitPoints : %d", getHitpoints()) + "\n";
-		chaine += String.format("LifeSpan : %.6f", getLifespan().toSeconds());
+		chaine += String.format("LifeSpan : %.6f", getLifespan().toSeconds()) + "\n";
+		chaine += String.format("State: ", getState());
 
 		return chaine;
 	}
@@ -83,14 +99,64 @@ public abstract class Animal extends Positionable {
 	}
 
 	public final void update(AnimalEnvironmentView env, Time dt) {
-		// multiplier le temps dt par la valeur parametrable
+		// Gestion de la duree de vie
 		Time time = dt.times(getConfig().getDouble(ANIMAL_LIFESPAN_DECREASE_FACTOR));
 		this.lifespan = this.lifespan.minus(time);
+		
+		//gestion du comportement selon l'etat de l'animal 
+				if(!this.isDead()) {
+					
+					switch(state) {
+						case ATTACK : if(this.canAttack()) {
+										this.fight(env, dt);
+									  }else {
+										  this.setState(State.ESCAPING);;
+										  this.attackDuration = Time.ZERO;
+									  }
+									  break;
+									  
+						case ESCAPING : this.escape(env, dt);
+										break; 
+										
+						default : this.specificBehaviorDispatch(env, dt);
+					}
+				
+				}
 
-		if (!this.isDead()) {
-			this.specificBehaviorDispatch(env, dt);
+	}
+	public final boolean canAttack() {
+		return (! state.equals(State.ESCAPING) && this.attackDuration.compareTo(this.getMaxAttackDuration()) <= 0);
+	}
+	
+	private final void escape(AnimalEnvironmentView env, Time dt) {
+		this.move(env, dt);
+		if(! env.isVisibleFromEnemies(this)) {
+			this.setState(State.IDLE);
 		}
-
+	}
+	
+	protected final void fight(AnimalEnvironmentView env, Time dt) {
+		//recuperer l ennemi le plus proche
+		List<Animal> ennemisVisibles = env.getVisibleEnemiesForAnimal(this);
+		
+		Animal animalEnnemiLePlusProche = Utils.closestFromPoint(this, ennemisVisibles);
+		
+		if(animalEnnemiLePlusProche != null) {
+			animalEnnemiLePlusProche.setState(State.ATTACK);
+			if(! this.getState().equals(State.ATTACK)){
+				this.setState(State.ATTACK);
+			}
+			// infliger les dégats
+			animalEnnemiLePlusProche.hitpoints -= UniformDistribution.getValue(getMinAttackStrength(), getMaxAttackStrength());
+			this.attackDuration = this.attackDuration.plus(dt);
+			
+		}else {
+			this.attackDuration = Time.ZERO;
+			if(this.getState().equals(State.ATTACK)) {
+				this.setState(State.ESCAPING);
+			}
+		}
+			
 	}
 
 	protected final RotationProbability computeDefaultRotationProbs() {

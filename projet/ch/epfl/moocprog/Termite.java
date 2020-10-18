@@ -42,6 +42,7 @@ public final class Termite extends Animal {
 
 	protected void seekForEnemies(AnimalEnvironmentView env, Time dt) {
 		this.move(env, dt);
+		this.fight(env, dt);
 	}
 
 	@Override

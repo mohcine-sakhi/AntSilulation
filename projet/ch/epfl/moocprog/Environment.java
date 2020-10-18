@@ -14,7 +14,7 @@ import ch.epfl.moocprog.utils.Time;
 import ch.epfl.moocprog.utils.Utils;
 
 public final class Environment implements FoodGeneratorEnvironmentView, AnimalEnvironmentView, AnthillEnvironmentView,
-		AntEnvironmentView, AntWorkerEnvironmentView {
+		AntEnvironmentView, AntWorkerEnvironmentView, TermiteEnvironmentView {
 
 	private FoodGenerator foodGenerator;
 	private List<Food> foods;
@@ -197,11 +197,11 @@ public final class Environment implements FoodGeneratorEnvironmentView, AnimalEn
 	@Override
 	public double[] getPheromoneQuantitiesPerIntervalForAnt(ToricPosition position, double directionAngleRad,
 			double[] angles) {
-		
+
 		if (position == null || angles == null) {
 			throw new IllegalArgumentException();
 		}
-		
+
 		double antSmellMaxDistance = getConfig().getDouble(ANT_SMELL_MAX_DISTANCE);
 		double distance;
 		double beta = 0;
@@ -213,19 +213,19 @@ public final class Environment implements FoodGeneratorEnvironmentView, AnimalEn
 			// pheromone non négligeable et à la poetée
 			if (!pheromone.isNegligible() && distance <= antSmellMaxDistance) {
 				beta = (position.toricVector(pheromone.getPosition())).angle() - directionAngleRad;
-			
+
 				closetAngle = Double.MAX_VALUE;
 				index = 0;
 				// chercher l index de l'angle le plus proche
 				for (int i = 0; i < angles.length; ++i) {
 					if (closestAngleFrom(angles[i], beta) < closetAngle) {
-						closetAngle = closestAngleFrom(angles[i], beta) ;
+						closetAngle = closestAngleFrom(angles[i], beta);
 						index = i;
 					}
 				}
-	
+
 				quantities[index] += pheromone.getQuantity();
-			}	
+			}
 		}
 		return quantities;
 	}
@@ -244,7 +244,7 @@ public final class Environment implements FoodGeneratorEnvironmentView, AnimalEn
 	private static double closestAngleFrom(double angle, double target) {
 		double diff = angle - target;
 		diff = normalizedAngle(diff);
-		
+
 		if (diff <= 2 * Math.PI - diff) {
 			return diff;
 		} else {
@@ -254,14 +254,69 @@ public final class Environment implements FoodGeneratorEnvironmentView, AnimalEn
 
 	@Override
 	public RotationProbability selectComputeRotationProbsDispatch(Ant ant) {
-		
+		if (ant == null) {
+			throw new IllegalArgumentException();
+		}
 		return ant.computeRotationProbs(this);
 	}
 
 	@Override
 	public void selectAfterMoveDispatch(Ant ant, Time dt) {
+		if (ant == null) {
+			throw new IllegalArgumentException();
+		}
 		ant.afterMoveAnt(this, dt);
+
+	}
+
+	@Override
+	public void selectSpecificBehaviorDispatch(Termite termite, Time dt) {
+		if (termite == null) {
+			throw new IllegalArgumentException();
+		}
+
+		termite.seekForEnemies(this, dt);
+
+	}
+
+	@Override
+	public void selectAfterMoveDispatch(Termite termite, Time dt) {
+		if (termite == null) {
+			throw new IllegalArgumentException();
+		}
+		termite.afterMoveTermite(this, dt);
+	}
+
+	@Override
+	public RotationProbability selectComputeRotationProbsDispatch(Termite termite) {
+		if (termite == null) {
+			throw new IllegalArgumentException();
+		}
+		return termite.computeRotationProbs(this);
+
+	}
+
+	@Override
+	public List<Animal> getVisibleEnemiesForAnimal(Animal from) {
+		if (from == null) {
+			throw new IllegalArgumentException();
+		}
+		// la liste des ennemis se trouvant une distance inférieur à ANIMAL_SIGHT_DISTANCE
+		double AnimalSightDistance = getConfig().getDouble(ANIMAL_SIGHT_DISTANCE);
+		return animals.stream()
+			   .filter(animal -> (from.isEnemy(animal)
+					   && from.getPosition().toricDistance(animal.getPosition()) <= AnimalSightDistance))
+			   .collect(Collectors.toList());
 		
+	}
+
+	@Override
+	public boolean isVisibleFromEnemies(Animal from) {
+		if (from == null) {
+			throw new IllegalArgumentException();
+		}
+		// si on voit un ennemi donc on est vu par cet ennemi
+		return this.getVisibleEnemiesForAnimal(from).size() > 0;
 	}
 
 }
